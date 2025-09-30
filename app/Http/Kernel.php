@@ -29,7 +29,9 @@ class Kernel extends HttpKernel
      * @var array<string, array<int, class-string|string>>
      */
     protected $routeMiddleware = [
-        'role' => \App\Http\Middleware\RoleMiddelware::class,
+        'adminMiddleware' => \App\Http\Middleware\Role\AdminMiddleware::class,
+        'trainerMiddleware' => \App\Http\Middleware\Role\TrainerMiddleware::class,
+        'studentMiddleware' => \App\Http\Middleware\Role\StudentMiddleware::class,
     ];
 
     protected $middlewareGroups = [

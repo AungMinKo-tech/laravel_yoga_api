@@ -1,26 +1,29 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Dashboard\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware(['auth:sanctum', 'role:2'])->group(function () {
-    //Trainer
+//Trainer
+Route::middleware(['auth:sanctum', 'trainerMiddleware'])->group(function () {
+    //user
 
 
-    Route::middleware(['auth:sanctum', 'role:1'])->group(function () {
-        //Admin
-
+    //Admin
+    Route::middleware(['auth:sanctum', 'adminMiddleware'])->group(function () {
+        //user
+        Route::resource('users', UserController::class)->only('index', 'store');
 
     });
 
 });
 
-Route::middleware(['auth:sanctum', 'role:3'])->group(function () {
-    //Student
+//Student
+Route::middleware(['auth:sanctum', 'studentMiddleware'])->group(function () {
 
 
 });
