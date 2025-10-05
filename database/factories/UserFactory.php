@@ -21,7 +21,7 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'password' => bcrypt('password'),
             'role_id' => Role::inRandomOrder()->first()->id ?? Role::factory(),
-            'avatar' => $this->faker->imageUrl(200, 200),
+            'profile_url' => $this->faker->imageUrl(200, 200),
             'ph_no' => $this->faker->phoneNumber(),
             'date_of_birth' => $this->faker->date(),
             'is_verified' => $this->faker->boolean(80),

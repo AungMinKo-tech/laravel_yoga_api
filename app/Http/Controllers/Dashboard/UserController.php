@@ -57,6 +57,7 @@ class UserController extends Controller
     //user show
     public function show($id){
         $user = User::find($id);
+        $user->load('role');
 
         if(!$user) {
             return $this->errorResponse('User not found.', 404);
