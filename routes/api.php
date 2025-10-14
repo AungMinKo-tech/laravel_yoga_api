@@ -1,11 +1,14 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
+use App\Models\User;
+use Illuminate\Support\Facades\Route;    
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\Api\AppointmentController;
+use App\Http\Controllers\Api\TrainerController;
+use App\Http\Controllers\Api\TestimonialController;
 
+//Public route
 Route::post('v1/register', [AuthController::class, 'register']);
 Route::post('v1/login', [AuthController::class, 'login']);
 
@@ -16,8 +19,15 @@ Route::prefix('v1/')->group(function () {
         Route::resource('users', UserController::class)->only('store', 'show', 'update', 'index');
         //role route
         Route::get('/roles', [RoleController::class, 'index']);
-
+        //appointment route
+        Route::apiResource('appointments', AppointmentController::class);
+        //trainer route
+        Route::apiResource('/trainers', TrainerController::class);
+        //testimonials route
+        Route::apiResource('/testimonials', TestimonialController::class);
+      
     });
+  
     //Trainer
     Route::middleware(['auth:sanctum', 'trainerMiddleware'])->group(function () {
         //user route
@@ -30,3 +40,4 @@ Route::prefix('v1/')->group(function () {
 
     });
 });
+
