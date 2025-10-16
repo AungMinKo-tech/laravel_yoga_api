@@ -12,7 +12,8 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->string('password');
             $table->foreignId('role_id')->default(3)->constrained('roles');
-            $table->string('avatar')->nullable();
+            $table->string('profile_url')->nullable();
+            $table->string('profile_public_id')->nullable();
             $table->string('ph_no')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->boolean('is_verified')->default(false);

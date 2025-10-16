@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Dashboard;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\Dashboard\RoleResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -19,7 +20,9 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'roleId' => $this->role_id,
-            'avatar' => $this->avatar,
+            'roles' => new RoleResource($this->whenLoaded('roles')),
+            'profileUrl' => $this->profile_url,
+            'profilePublicId' => $this->profile_public_id,
             'phNo' => $this->ph_no,
             'dateOfBirth' => $this->date_of_birth,
             'isVerified' => $this->is_verified,
