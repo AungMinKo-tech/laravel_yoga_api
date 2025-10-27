@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Models\Lesson;
+use App\Models\SubscriptionUser;
 use Illuminate\Http\Request;
 use App\Http\Helpers\ApiResponse;
 use Laravel\Sanctum\HasApiTokens;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Dashboard\LessonResource;
@@ -23,10 +25,31 @@ class LessonController extends Controller
      */
     public function index()
     {
-        $lesson = Lesson::orderBy('created_at', 'desc')
-            ->paginate(config('pagination.perPage'));
+        $user = Auth::user();
 
-        return $this->successResponse('Lesson retrieved successfully', $this->buildPaginatedResourceResponse(LessonResource::class, $lesson), 200);
+        if ($user->role_id == 1 || $user->role_id == 2) {
+            $lesson = Lesson::orderBy('created_at', 'desc')
+                ->paginate(config('pagination.perPage'));
+
+            return $this->successResponse('Lesson retrieved successfully', $this->buildPaginatedResourceResponse(LessonResource::class, $lesson), 200);
+        }
+
+        if ($user->role_id == 3) {
+            $hasSubcription = SubscriptionUser::where('status', 'active')
+                ->where('end_date', '>=', now())
+                ->exists();
+
+            if ($hasSubcription) {
+                $lesson = Lesson::where(function ($query) {
+                    $query->where('is_free', true)
+                        ->orWhere('is_premium', true);
+                })->paginate(config('pagination.perPage'));
+            } else {
+                $lesson = Lesson::where('is_free', true)->paginate(config('pagination.perPage'));
+            }
+
+            return $this->successResponse('Lesson retrieved successfully', $this->buildPaginatedResourceResponse(LessonResource::class, $lesson), 200);
+        }
     }
 
     /**
@@ -105,7 +128,7 @@ class LessonController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required',
-            'slug' => 'required|unique:lessons,slug,'. $id,
+            'slug' => 'required|unique:lessons,slug,' . $id,
             'description' => 'required',
             'level' => 'required',
             'video' => 'required|file|mimes:mp4,avi,mov',
@@ -150,14 +173,15 @@ class LessonController extends Controller
      * DELETE /api/v1/lessons/{id}
      * Delete lesson video
      */
-    public function destory($id) {
+    public function destory($id)
+    {
         $lesson = Lesson::find($id);
 
         if (!$lesson) {
             return $this->errorResponse('Lesson not found', 404);
         }
 
-        if($lesson->video_public_id) {
+        if ($lesson->video_public_id) {
             Cloudinary::destroy($lesson->video_public_id, ['resources_types' => 'video']);
         }
 
