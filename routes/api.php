@@ -1,23 +1,23 @@
 <?php
 
-use App\Http\Controllers\Dashboard\FoodController;
+use App\Http\Controllers\Client\AdminSubscriptionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\SocialLoginController;
+use App\Http\Controllers\Dashboard\FoodController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Api\VerifyEmailController;
 use App\Http\Controllers\Dashboard\LessonController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\TrainerController;
-use App\Http\Controllers\Dashboard\LessonTrainerController;
 use App\Http\Controllers\Api\ForgetPasswordController;
 use App\Http\Controllers\Dashboard\LessonTypeController;
-use App\Http\Controllers\Client\PaymentHistoryController;
 use App\Http\Controllers\Dashboard\AppointmentController;
 use App\Http\Controllers\Dashboard\TestimonialController;
 use App\Http\Controllers\Dashboard\SubscriptionController;
-use App\Http\Controllers\Dashboard\Controller;
+use App\Http\Controllers\Client\UserSubscriptionController;
+use App\Http\Controllers\Dashboard\LessonTrainerController;
 
 //aaa
 //Public route
@@ -35,14 +35,20 @@ Route::get('v1/auth/{provider}/redirect', [SocialLoginController::class, 'redire
 
 Route::get('v1/auth/{provider}/callback', [SocialLoginController::class, 'callback']);
 
+//Admin route only
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::get('v1/users', [UserController::class, 'index']);
+});
+
+//Admin & Trainer route
 Route::prefix('v1/')->group(function () {
-    //Admin
-    Route::middleware(['auth:sanctum', 'adminMiddleware'])->group(function () {
+
+    Route::middleware(['auth:sanctum', 'role:admin,trainer'])->group(function () {
         //user route
-        Route::resource('users', UserController::class)->only('store', 'show', 'update', 'index');
+        Route::resource('users', UserController::class)->only('store', 'show', 'update');
 
         //role route
-        Route::get('/roles', [RoleController::class, 'index']);
+        Route::get('roles', [RoleController::class, 'index']);
 
         //payment route
         Route::resource('payments', PaymentController::class);
@@ -51,42 +57,36 @@ Route::prefix('v1/')->group(function () {
         Route::apiResource('appointments', AppointmentController::class);
 
         //trainer route
-        Route::apiResource('/trainers', TrainerController::class);
+        Route::apiResource('trainers', TrainerController::class);
 
         //testimonials route
-        Route::apiResource('/testimonials', TestimonialController::class);
+        Route::apiResource('testimonials', TestimonialController::class);
 
         //subscription
         Route::resource('subscriptions', SubscriptionController::class);
 
         //subscription user
-        // Route::resource('/subscriptionUsers', SubscriptionUserController::class)->only(['index', 'update']);
+        Route::resource('subscription-users', AdminSubscriptionController::class)->only(['index', 'update']);
 
         //lesson type route
-        Route::resource('/lesson-types', LessonTypeController::class);
+        Route::resource('lesson-types', LessonTypeController::class);
 
         //lessontrainer route
-        Route::resource('/lesson-trainers', LessonTrainerController::class);
+        Route::post('lesson-trainers', [LessonTrainerController::class, 'assign']);
+        Route::delete('lesson-trainers/{id}', [LessonTrainerController::class, 'unassign']);
 
         //lesson route
-        Route::resource('/lessons', LessonController::class);
+        Route::resource('lessons', LessonController::class);
 
         //food route
-        Route::resource('/foods', FoodController::class);
+        Route::resource('foods', FoodController::class);
     });
 
-    //Trainer
-    Route::middleware(['auth:sanctum', 'trainerMiddleware'])->group(function () {
-        //user route
-        Route::resource('users', UserController::class)->only('show', 'update');
-
-    });
-
-    //Student
-    Route::middleware(['auth:sanctum', 'studentMiddleware'])->group(function () {
+    //Student route
+    Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
         //subscription route
-        Route::post('/users/{id}/subscriptions', [PaymentHistoryController::class, 'store']);
-        Route::get('/users/{id}/subscriptions', [PaymentHistoryController::class, 'show']);
+        Route::get('/users/{id}/subscriptions', [UserSubscriptionController::class, 'index']);
+        Route::post('/users/{id}/subscriptions', [UserSubscriptionController::class, 'store']);
     });
 });
 

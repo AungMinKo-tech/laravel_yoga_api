@@ -5,7 +5,7 @@ namespace App\Http\Resources\Dashboard;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SubscriptionUserResource extends JsonResource
+class AdminSubscriptionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

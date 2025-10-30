@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Client;
 
 
-use App\Http\Resources\Dashboard\SubscriptionUserResource;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use App\Models\PaymentHistory;
@@ -11,14 +10,34 @@ use App\Models\SubscriptionUser;
 use App\Http\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\Client\UserPaymentResource;
+use App\Http\Resources\Client\UserSubscriptionResource;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Http\Resources\Dashboard\AdminSubscriptionResource;
 
-class PaymentHistoryController extends Controller
+class UserSubscriptionController extends Controller
 {
     use ApiResponse;
 
-    public function store(Request $request)
+    /**
+     * GET /users/{id}/subscriptions
+     * List user's subscription
+     */
+    public function index($id) {
+
+        $subscription = SubscriptionUser::where('user_id', $id)->get();
+
+        if(!$subscription) {
+            return $this->errorResponse('Subscription not found', 404);
+        }
+
+        return $this->successResponse('Your subscription ', UserSubscriptionResource::collection($subscription), 200);
+    }
+
+    /**
+     * POST /users/{id}/subscriptions
+     * Create user's subscription
+     */
+    public function store(Request $request, $id)
     {
 
         $validator = Validator::make($request->all(), [
@@ -32,7 +51,6 @@ class PaymentHistoryController extends Controller
             return $this->errorResponse($validator->errors(), 422);
         }
 
-        $user = auth()->user();
         $subscription = Subscription::find($request->subscriptionId);
 
         if (!$subscription) {
@@ -41,7 +59,7 @@ class PaymentHistoryController extends Controller
 
         try {
             $paymentData = [
-                'user_id' => $request->userId,
+                'user_id' => $id,
                 'payment_method_id' => $request->paymentMethodId,
                 'subscription_id' => $request->subscriptionId,
                 'ph_no' => $request->phNo,
@@ -57,7 +75,7 @@ class PaymentHistoryController extends Controller
             PaymentHistory::create($paymentData);
 
             $user = SubscriptionUser::create([
-                'user_id' => $request->userId,
+                'user_id' => $id,
                 'subscription_id' => $request->subscriptionId,
                 'status' => 'pending'
             ]);
@@ -65,8 +83,8 @@ class PaymentHistoryController extends Controller
             return $this->successResponse(
                 'Payment submitted.Waiting for admin approval.',
                 [
-                    "payment" => new UserPaymentResource($paymentData),
-                    "subscription" => new SubscriptionUserResource($user)
+                    "payment" => new UserSubscriptionResource($paymentData),
+                    "subscription" => new AdminSubscriptionResource($user)
                 ],
                 201
             );
@@ -74,16 +92,5 @@ class PaymentHistoryController extends Controller
         } catch (\Exception $e) {
             return $this->errorResponse('Subscription attach failed: ' . $e->getMessage(), 500);
         }
-    }
-
-    public function show($id)
-    {
-        $subUser = SubscriptionUser::findOrFail($id);
-
-        if (!$subUser) {
-            return $this->errorResponse('Subscription not found!', 404);
-        }
-
-        return $this->successResponse('', new SubscriptionUserResource($subUser), 200);
     }
 }

@@ -21,6 +21,13 @@ class DatabaseSeeder extends Seeder
             'role_id' => 1
         ]);
 
+        \App\Models\User::create([
+            'full_name' => "Alice",
+            'email' => "alice@gmail.com",
+            'password' => Hash::make('alice123456'),
+            'role_id' => 2
+        ]);
+
         \App\Models\User::factory(10)->create();
         \App\Models\LessonType::factory(5)->create();
         \App\Models\Subscription::factory(5)->create();

@@ -6,19 +6,40 @@ use Illuminate\Http\Request;
 use App\Models\SubscriptionUser;
 use App\Http\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\Dashboard\SubscriptionUserResource;
+use App\Http\Resources\Dashboard\AdminSubscriptionResource;
 
-class SubscriptionUserController extends Controller
+class AdminSubscriptionController extends Controller
 {
     use ApiResponse;
 
+    /**
+     * GET /api/v1/subscription-users
+     * List all subscription users
+     */
     public function index() {
         $subUser = SubscriptionUser::all();
 
-        return $this->successResponse('Successfully', SubscriptionUserResource::collection($subUser), 200);
+        return $this->successResponse('Successfully', AdminSubscriptionResource::collection($subUser), 200);
     }
 
+    /**
+     * GET /api/v1/subscription-users/{id}
+     * Show subscription user information
+     */
+    public function show($id) {
+        $subUser = SubscriptionUser::find($id);
+
+        if(!$subUser) {
+            return $this->errorResponse('Subscription not found', 404);
+        }
+
+        return $this->successResponse('Successfully', new AdminSubscriptionResource($subUser), 200);
+    }
+
+    /**
+     * PUT /api/v1/subscription-users/{id}
+     * Update subscription user information
+     */
     public function update(Request $request, $id)
     {
         $subUser = SubscriptionUser::with('subscriptions')->findOrFail($id);
@@ -41,6 +62,6 @@ class SubscriptionUserController extends Controller
             return $this->errorResponse('Invalid status value', 422);
         }
 
-        return $this->successResponse('Status updated!', new SubscriptionUserResource($subUser), 200);
+        return $this->successResponse('Status updated!', new AdminSubscriptionResource($subUser), 200);
     }
 }

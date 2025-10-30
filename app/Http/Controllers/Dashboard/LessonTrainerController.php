@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 class LessonTrainerController extends Controller
 {
     /**
+     * POST /api/v1/lesson-trainers
      * Assign a lesson to a trainer.
      */
     public function assign(Request $request)
@@ -31,6 +32,7 @@ class LessonTrainerController extends Controller
     }
 
     /**
+     * DELETE /api/v1/lesson-trainers/{id}
      * Remove a lesson assignment from a trainer.
      */
     public function unassign(Request $request, $lessonId, $trainerId)
