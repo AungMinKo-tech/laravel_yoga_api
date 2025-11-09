@@ -11,30 +11,24 @@ class Appointment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'admin_id', 'trainer_id',
-        'appointment_date', 'appointment_fees',
-        'meet_link', 'is_approved', 'is_completed'
+        'user_id',
+        'appointment_date',
+        'appointment_time',
+        'appointment_type',
+        'appointment_fees',
+        'meet_link',
+        'is_approved',
+        'is_completed'
     ];
 
     protected $casts = [
-        'appointment_date' => 'datetime',
+        'appointment_date' => 'date',
         'appointment_fees' => 'decimal:2',
-        'is_approved' => 'boolean',
         'is_completed' => 'boolean',
     ];
 
-    public function student()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function admin()
-    {
-        return $this->belongsTo(User::class, 'admin_id');
-    }
-
-    public function trainer()
-    {
-        return $this->belongsTo(User::class, 'trainer_id');
     }
 }

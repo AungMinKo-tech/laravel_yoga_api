@@ -4,7 +4,7 @@ This document lists **all API endpoints**, **assigned modules**, and **developer
 
 ---
 
-## 1️⃣ User & Role Management (Dev 1)
+## 1️⃣ User & Role Management
 
 **Models:** `User`, `Role`  
 **Responsibilities:** Authentication, user CRUD, role assignment
@@ -21,7 +21,7 @@ This document lists **all API endpoints**, **assigned modules**, and **developer
 
 ---
 
-## 2️⃣ Lessons & Lesson Types (Dev 2)
+## 2️⃣ Lessons & Lesson Types
 
 **Models:** `Lesson`, `LessonType`, `LessonTrainer`  
 **Responsibilities:** CRUD lessons and lesson types, assign lessons to trainers
@@ -41,9 +41,9 @@ This document lists **all API endpoints**, **assigned modules**, and **developer
 
 ---
 
-## 3️⃣ Subscriptions & Payments (Dev 3)
+## 3️⃣ Subscriptions & Payments
 
-**Models:** `Subscription`, `SubscriptionUser`  
+**Models:** `Subscription`, `SubscriptionUser`, `SubscriptionAdmin` 
 **Responsibilities:** Manage subscriptions, assign subscriptions to users, pricing
 
 | Method | Endpoint | Description |
@@ -52,12 +52,15 @@ This document lists **all API endpoints**, **assigned modules**, and **developer
 | POST   | /api/subscriptions | Create subscription |
 | PUT    | /api/subscriptions/{id} | Update subscription |
 | DELETE | /api/subscriptions/{id} | Delete subscription |
+| GET    | /api/subscription-users | List all user's subscription |
+| GET    | /api/subscription-users/{id} | Show user's subscription |
+| PUT    | /api/subscription-users/{id} | Update user's subscription (accept/reject) |
 | POST   | /api/users/{id}/subscriptions | Assign subscription to user |
 | GET    | /api/users/{id}/subscriptions | List user's subscriptions |
 
 ---
 
-## 4️⃣ Appointments & Trainer Management (Dev 4)
+## 4️⃣ Appointments & Trainer Management
 
 **Models:** `Appointment`, `TrainerDetail`, `Testimonial`  
 **Responsibilities:** Manage appointments, trainer profiles, testimonials
@@ -65,18 +68,33 @@ This document lists **all API endpoints**, **assigned modules**, and **developer
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET    | /api/appointments | List all appointments |
-| POST   | /api/appointments | Create appointment |
 | PUT    | /api/appointments/{id} | Update appointment (approve/complete) |
 | DELETE | /api/appointments/{id} | Delete appointment |
+| POST   | /api/users/{id}/appointments/create | Create appointment |
+| POST   | /api/users/{id}/appointments/history | Show client's all appointment |
 | GET    | /api/trainers | List trainers |
 | POST   | /api/trainers | Create trainer profile |
 | PUT    | /api/trainers/{id} | Update trainer profile |
 | GET    | /api/testimonials | List testimonials |
-| POST   | /api/testimonials | Create testimonial |
+| POST   | /api/testimonials | Create testimonial (Client Only) |
 
 ---
 
-## 5️⃣ Notes for Developers
+## 5️⃣ Payment Method Management
+
+**Models:** `Payment`  
+**Responsibilities:** Manage payment information and User payment history
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | /api/payments | List all payment |
+| POST   | /api/payments | Create payment information |
+| PUT    | /api/payments/{id} | Update payment information |
+| DELETE | /api/payments/{id} | Delete payment information |
+
+---
+
+## 6️⃣ Notes for Developers
 
 - **Authentication**: Dev 1 implements JWT or Sanctum or Spatie for all protected routes.
 - **Role-based access**: Use middleware to protect endpoints by role (`admin`, `trainer`, `student`).
@@ -88,7 +106,7 @@ This document lists **all API endpoints**, **assigned modules**, and **developer
 
 ---
 
-## 6️⃣ Branching & Git Commit Guidelines
+## 7️⃣ Branching & Git Commit Guidelines
 
 ### Branch Naming
 - `feature/users` → User & Role Management  
@@ -111,7 +129,7 @@ This document lists **all API endpoints**, **assigned modules**, and **developer
 
 ---
 
-## 7️⃣ Summary Table
+## 8️⃣ Summary Table
 
 | Developer | Module | Models | Main API Endpoints |
 |-----------|--------|--------|------------------|
