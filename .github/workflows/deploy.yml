@@ -2,7 +2,7 @@ name: Deploy Laravel to AWS EC2
 
 on:
   push:
-    branches: [ "main" ]      # main branch commit push  auto deploy
+    branches: [ "main" ]    # main branch commit push  auto deploy
 
 jobs:
   deploy:
@@ -14,10 +14,10 @@ jobs:
 
     - name: Deploy to AWS
       uses: easingthemes/ssh-deploy@main
-      env: 
+      env:
 
         SSH_PRIVATE-KEY: ${{ secrets.EC2_SSH_KEY }}
         REPORT_HOST: ${{ secrets.HOST_DNS }}
         REMOTE_USER: ${{ secrets.USERNAME }}
         TARGET: ${{ secrets.TARGET_DIR }}
-        
+
